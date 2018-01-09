@@ -1,0 +1,26 @@
+version: '3.3'
+
+services:
+
+  site:
+    image: site
+    networks:
+      - app-net
+
+  subsite:
+    image: subsite
+    networks:
+      - app-net
+
+  proxy:
+    image: proxy
+    ports:
+      - "80:80"
+    depends_on:
+      - site
+      - subsite
+    networks:
+      - app-net
+
+networks:
+  app-net:
