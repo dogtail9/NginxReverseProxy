@@ -7,13 +7,15 @@ function Request-Input
 {
     param
     (
-        [string] $message
+        [string] $message,
+        [string] $command
     )
 
     if($DEMO)
     {
         Clear-Host
         Write-Host $message -ForegroundColor "yellow" -BackgroundColor "black"
+        Write-Host $command
         $x = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") 
     }
 }
@@ -22,7 +24,7 @@ function Wait-Input
 {
     if($DEMO)
     {
-        Write-Host $message -ForegroundColor "yellow" -BackgroundColor "black"
+        Write-Host "Press a key to continue" -ForegroundColor "yellow" -BackgroundColor "black"
         $x = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") 
     }
 }
@@ -256,7 +258,6 @@ function Run-ProxyContainerOnTestNetwork
 function Open-ProxyContainerInBrowser
 {
     Start-Process "http://localhost"
-    Wait-Input
 }
 
 function Create-NewSubSiteFolder
@@ -470,128 +471,130 @@ docker rm (docker ps -a -q) -f
 docker rmi site subsite proxy -f
 Remove-Item DEMO -Recurse -ErrorAction Ignore
 
-Request-Input -message "Create-SiteFolder"
+Request-Input -message "Create a Site folder"
 Create-ProjectFolder
 Create-SiteFolder
 
-Request-Input -message "Create-SiteHtml"
+Request-Input -message "Create html files for the Site"
 Create-SiteHtml
 
-Request-Input -message "Create-SiteDockerfile"
+Request-Input -message "Create a Dockerfile for Site"
 Create-SiteDockerfile
 
-Request-Input -message "Build-SiteImage"
+Request-Input -message "Build the Site image" -command "docker build -t site -f .\site\Dockerfile ."
 Build-SiteImage
 
-Request-Input -message "Run-SiteContainer"
+Request-Input -message "Start a Site container mapped to port 8080" -command "docker run -d --name site -p 8080:80 site"
 Run-SiteContainer
 
-Request-Input -message "Open-SiteContainerInBrowser"
+Request-Input -message "Browse to the site"
 Open-SiteContainerInBrowser
 
-Request-Input -message "Create-SubSiteFolder"
+Request-Input -message "Create a SubSite Folder"
 Create-SubSiteFolder
 
-Request-Input -message "Create-SubSiteHtml"
+Request-Input -message "Create html files for the SubSite"
 Create-SubSiteHtml
 
-Request-Input -message "Edit-SiteHtml"
+Request-Input -message "Add a link to subsite from the homepage"
 Edit-SiteHtml
 
-Request-Input -message "Remove-SiteContainer"
+Request-Input -message "Delete the Site container" -command "docker rm site -f"
 Remove-SiteContainer
 
-Request-Input -message "Remove-SiteImage"
+Request-Input -message "Delete the Site image" -command "docker rmi site -f"
 Remove-SiteImage
 
-Request-Input -message "Build-SiteImage"
+Request-Input -message "Build a new Site image" -command "docker build -t site -f .\site\Dockerfile ."
 Build-SiteImage
 
-Request-Input -message "Run-SiteContainer"
+Request-Input -message "Start a new Site Container" -command "docker run -d --name site -p 8080:80 site"
 Run-SiteContainer
 
-Request-Input -message "Open-SiteContainerInBrowser"
+Request-Input -message "Browse to the site"
 Open-SiteContainerInBrowser
 
-Request-Input -message "Create-ProxyFolder"
+Request-Input -message "Create a Proxy folder"
 Create-ProxyFolder
 
-Request-Input -message "Create-ProxyConfigFile"
+Request-Input -message "Create a configuration file for Nginx"
 Create-ProxyConfigFile
 
-Request-Input -message "Create-ProxyDockerfile"
+Request-Input -message "Create a Dockerfile for proxy"
 Create-ProxyDockerfile
 
-Request-Input -message "Remove-SiteContainer"
+Request-Input -message "Delete the Site container" -command "docker rm site -f"
 Remove-SiteContainer
 
-Request-Input -message "Build-ProxyImage"
+Request-Input -message "Build the Proxy image" -command "docker build -t proxy -f .\proxy\Dockerfile ."
 Build-ProxyImage
 
-Request-Input -message "Create-TestNetwork"
+Request-Input -message "Create a network named Test" -command "docker network create Test"
 Create-TestNetwork
 
-Request-Input -message "Run-SiteContainerOnTestNetwork"
+Request-Input -message "Start a Site container attached to the Test network" -command "docker run -d -P --name site --network Test site"
 Run-SiteContainerOnTestNetwork
 
-Request-Input -message "Run-ProxyContainerOnTestNetwork"
+Request-Input -message "Start a Proxy container attached to the Test network mapped to port 80" -command "docker run --name proxy -d -p 80:80 --network Test proxy"
 Run-ProxyContainerOnTestNetwork
 
-Request-Input -message "Open-ProxyContainerInBrowser"
+Request-Input -message "Browse to site thru the proxy server"
 Open-ProxyContainerInBrowser
 
-Request-Input -message "Create-NewSubSiteFolder"
+Request-Input -message "Create a new SubSite Folder"
 Create-NewSubSiteFolder
 
-Request-Input -message "Create-NewSubSiteHtml"
+Request-Input -message "Create html files for the new SubSite"
 Create-NewSubSiteHtml
 
-Request-Input -message "Create-NewSubSiteDockerfile"
+Request-Input -message "Create a Dockerfile for the new SubSite"
 Create-NewSubSiteDockerfile
 
-Request-Input -message "Edit-ProxyConfigFile"
+Request-Input -message "Add route to the new SubSite in the Nginx configuration"
 Edit-ProxyConfigFile
 
-Request-Input -message "Remove-ProxyContainer"
+Request-Input -message "Remove the Proxy container and the proxy image" -command "docker rm proxy -f 
+docker rmi proxy"
 Remove-ProxyContainer
 
-Request-Input -message "Build-ProxyImage"
+Request-Input -message "Build a new Proxy image" -command "docker build -t proxy -f .\proxy\Dockerfile ."
 Build-ProxyImage
 
-Request-Input -message "Build-NewSubSiteImage"
+Request-Input -message "Build the new SubSite Image" -command "docker build -t subsite -f .\subsite\Dockerfile ."
 Build-NewSubSiteImage
 
-Request-Input -message "Run-NewSubSiteContainerOnTestNetwork"
+Request-Input -message "Start a SubSite container attached to the Test network" -command "docker run -d -P --name subsite --network Test subsite"
 Run-NewSubSiteContainerOnTestNetwork
 
-Request-Input -message "Run-ProxyContainerOnTestNetwork"
+Request-Input -message "Start a new Proxy container attached to the Test network mapped to port 80" -command "docker run --name proxy -d -p 80:80 --network Test proxy"
 Run-ProxyContainerOnTestNetwork
 
-Request-Input -message "Open-ProxyContainerInBrowser"
+Request-Input -message "Browse to site thru the proxy server"
 Open-ProxyContainerInBrowser
 
-Request-Input -message "Remove-AllContainersAndNetwork"
+Request-Input -message "Remove all containers and the Test network" -command "docker rm site subsite proxy -f 
+docker network rm Test"
 Remove-AllContainersAndNetwork
 
-Request-Input -message "Create-DockerComposeFile"
+Request-Input -message "Create a docker-compose file"
 Create-DockerComposeFile
 
-Request-Input -message "Run-DockerComposeFile"
+Request-Input -message "Start all containers with one command" -command "docker-compose -f .\docker-compose.yml up -d"
 Run-DockerComposeFile
 
-Request-Input -message "Open-ProxyContainerInBrowser"
+Request-Input -message "Browse to site thru the proxy server"
 Open-ProxyContainerInBrowser
 
-Request-Input -message "Create-DockerComposeBuildFile"
+Request-Input -message "Create a docker-compose build file"
 Create-DockerComposeBuildFile
 
-Request-Input -message "Build-DockerComposeWithBuildFile"
+Request-Input -message "Build all containers with one command" -command "docker-compose -f .\docker-compose.yml -f .\docker-compose.build.yml build"
 Build-DockerComposeWithBuildFile
 
-Request-Input -message "Run-DockerComposeWithBuildFile"
+Request-Input -message "Build and start all containers with one command" -command "docker-compose -f .\docker-compose.yml -f .\docker-compose.build.yml up --build -d"
 Run-DockerComposeWithBuildFile
 
-Request-Input -message "Remove-DockerCompose"
+Request-Input -message "Remove all containers and networks with one command" -command "docker-compose -f .\docker-compose.yml down"
 Remove-DockerCompose
 
 Set-Location ..
