@@ -236,7 +236,7 @@ function Build-ProxyImage
 
 function Create-TestNetwork
 {
-    docker network create Test
+    docker network create --subnet 192.168.1.0/16 Test
     docker network ls
     Wait-Input
 }
@@ -397,10 +397,14 @@ services:
       - app-net
     
 networks:
-  app-net:    
+  app-net:
+    ipam:
+      driver: default
+      config: 
+        - subnet: 192.168.1.0/16    
 "@
 
-    $dockerCompose | Out-File docker-compose.yml -Encoding utf8
+    $dockerCompose | Out-File docker-compose.yml -Encoding ascii
 }
 
 function Run-DockerComposeFile
@@ -434,7 +438,7 @@ services:
       dockerfile: ./proxy/Dockerfile
 "@
 
-    $dockerComposeBuild | Out-File docker-compose.build.yml -Encoding utf8
+    $dockerComposeBuild | Out-File docker-compose.build.yml -Encoding ascii
 }
 
 function Build-DockerComposeWithBuildFile

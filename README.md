@@ -172,6 +172,12 @@ To use the DNS in Docker we need to create a network and add both of our contain
 docker network create Test
 ```
 
+If you need you can specify the ip range for the network with the --subnet argument.
+
+```powershell
+docker network create --subnet 192.168.1.0/16 Test
+```
+
 ![Folder structure Step 1](pictures/060.PNG)  
 *The "Test" are created*
 
@@ -324,6 +330,17 @@ services:
 
 networks:
   app-net:
+```
+
+If you need you can specify the ip range for the network with the -subnet configuration.
+
+```yml
+networks:
+  app-net:
+    ipam:
+      driver: default
+      config: 
+        - subnet: 192.168.1.0/16
 ```
 
 We use version 3.3 of the docker-compose file format. We specify witch services (containers) our application consists of. In our case site, subsite ans proxy. The image property of a service defines the image that should be used to create the container. We also specify a network that the container should be attached to. In our case the network is named app-net. The proxy service also specifies a port mapping so that we can talk to the proxy container on port 80. The proxy service also depends on the site and subsite services. Docker-compose will create the site and subsite container before the proxy container in this case. This docker file reqires that the images in present in your image registry. This docker-compose file are ment to be used in a test or production environment.
