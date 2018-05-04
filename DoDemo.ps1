@@ -1,7 +1,16 @@
 param
 (
-    [switch]$DEMO
+    [switch]$DEMO,
+    [switch]$RemoveDemoFolder
 )
+
+function Remove-DemoFolder
+{
+    if($RemoveDemoFolder)
+    {
+        Remove-Item -Path DEMO -Recurse -Force
+    }
+}
 
 function Request-Input
 {
@@ -608,5 +617,7 @@ if($DEMO)
 {
     Clear-Host
 }
+
+Remove-DemoFolder
 
 Write-Host "THE END" -ForegroundColor "yellow" -BackgroundColor "black"
